@@ -18,6 +18,11 @@ from api.serializers.productivity import (
     HabitCreateUpdateSerializer,
     HabitLogSerializer,
 )
+from api.serializers.inline import (
+    PomodoroCompleteRequestSerializer,
+    HabitCompleteRequestSerializer,
+    HabitCompleteResponseSerializer,
+)
 
 
 @extend_schema_view(
@@ -73,13 +78,7 @@ class PomodoroSessionViewSet(viewsets.ModelViewSet):
         summary="Complete a pomodoro session",
         description="Mark an in-progress session as completed.",
         tags=['Pomodoro'],
-        request={
-            'type': 'object',
-            'properties': {
-                'interruptions_count': {'type': 'integer', 'default': 0},
-                'notes': {'type': 'string'}
-            }
-        },
+        request=PomodoroCompleteRequestSerializer,
         responses={
             200: PomodoroSessionSerializer
         }
@@ -260,21 +259,9 @@ class HabitViewSet(viewsets.ModelViewSet):
         summary="Log habit completion",
         description="Record a completion of this habit. Updates streak automatically.",
         tags=['Habits'],
-        request={
-            'type': 'object',
-            'properties': {
-                'notes': {'type': 'string', 'description': 'Optional notes about this completion'}
-            }
-        },
+        request=HabitCompleteRequestSerializer,
         responses={
-            201: {
-                'type': 'object',
-                'properties': {
-                    'log': {'type': 'object'},
-                    'habit': {'type': 'object'},
-                    'message': {'type': 'string'}
-                }
-            }
+            201: HabitCompleteResponseSerializer
         }
     )
     @action(detail=True, methods=['post'])

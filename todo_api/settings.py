@@ -239,6 +239,17 @@ This API is designed to be Model Context Protocol (MCP) compatible for AI agent 
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
+    
+    # Fix enum naming collisions
+    'ENUM_NAME_OVERRIDES': {
+        'TaskStatusEnum': 'core.models.Task.Status',
+        'PomodoroStatusEnum': 'core.models.PomodoroSession.SessionStatus',
+        'PomodoroTypeEnum': 'core.models.PomodoroSession.SessionType',
+        'PriorityEnum': 'core.models.Task.Priority',
+        'EnergyLevelEnum': 'core.models.Task.EnergyLevel',
+        'HabitFrequencyEnum': 'core.models.Habit.Frequency',
+    },
+    
     'TAGS': [
         {'name': 'Authentication', 'description': 'User registration, login, and token management'},
         {'name': 'Tasks', 'description': 'Task CRUD operations'},

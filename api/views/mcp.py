@@ -14,6 +14,7 @@ from django.utils import timezone
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from core.models import Task, Category, Tag, Habit, PomodoroSession
+from api.serializers.inline import MCPExecuteRequestSerializer, MCPExecuteResponseSerializer
 
 
 class MCPCapabilitiesView(APIView):
@@ -347,23 +348,9 @@ Execute a tool by name with the provided arguments.
 ```
         """,
         tags=['MCP'],
-        request={
-            'type': 'object',
-            'properties': {
-                'tool': {'type': 'string', 'description': 'Tool name to execute'},
-                'arguments': {'type': 'object', 'description': 'Tool arguments'}
-            },
-            'required': ['tool']
-        },
+        request=MCPExecuteRequestSerializer,
         responses={
-            200: {
-                'type': 'object',
-                'properties': {
-                    'success': {'type': 'boolean'},
-                    'result': {'type': 'object'},
-                    'error': {'type': 'string', 'nullable': True}
-                }
-            }
+            200: MCPExecuteResponseSerializer
         }
     )
     def post(self, request):

@@ -17,6 +17,10 @@ from api.serializers.tasks import (
     TaskDetailSerializer,
     TaskCreateUpdateSerializer,
 )
+from api.serializers.inline import (
+    BulkUpdateStatusRequestSerializer,
+    BulkUpdateStatusResponseSerializer,
+)
 
 
 @extend_schema_view(
@@ -378,22 +382,9 @@ class TaskViewSet(viewsets.ModelViewSet):
         summary="Bulk update task status",
         description="Update status for multiple tasks at once.",
         tags=['Tasks'],
-        request={
-            'type': 'object',
-            'properties': {
-                'task_ids': {'type': 'array', 'items': {'type': 'string'}},
-                'status': {'type': 'string', 'enum': ['pending', 'in_progress', 'completed', 'cancelled']}
-            },
-            'required': ['task_ids', 'status']
-        },
+        request=BulkUpdateStatusRequestSerializer,
         responses={
-            200: {
-                'type': 'object',
-                'properties': {
-                    'updated_count': {'type': 'integer'},
-                    'message': {'type': 'string'}
-                }
-            }
+            200: BulkUpdateStatusResponseSerializer
         }
     )
     @action(detail=False, methods=['post'])
