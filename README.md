@@ -90,6 +90,20 @@ The API will be available at `http://localhost:8000/`
 - **ReDoc**: `http://localhost:8000/api/v1/docs/redoc/`
 - **OpenAPI Schema**: `http://localhost:8000/api/v1/docs/schema/`
 
+### Admin Interface
+
+Django Admin provides a web-based interface for managing all data:
+
+- **URL**: `http://localhost:8000/admin/`
+- **Login**: Use the superuser credentials created during setup
+
+**Available Admin Features:**
+- User management with productivity settings
+- Task, Category, and Tag management
+- Habit tracking and completion logs
+- Pomodoro session monitoring
+- Productivity snapshot viewing
+
 ### Authentication
 
 The API uses JWT (JSON Web Token) authentication.
