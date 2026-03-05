@@ -2,6 +2,8 @@
 Task, Category, and Tag Serializers
 """
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
+from typing import List, Dict, Any
 from core.models import Category, Tag, Task
 
 
@@ -23,11 +25,13 @@ class CategorySerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
     
-    def get_tasks_count(self, obj):
+    @extend_schema_field(int)
+    def get_tasks_count(self, obj) -> int:
         """Get number of tasks in this category."""
         return obj.tasks.count()
     
-    def get_subcategories(self, obj):
+    @extend_schema_field(list)
+    def get_subcategories(self, obj) -> List[Dict[str, Any]]:
         """Get child categories (one level deep)."""
         children = obj.subcategories.filter(is_active=True)
         return CategorySimpleSerializer(children, many=True).data
@@ -74,7 +78,8 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'color', 'tasks_count', 'created_at']
         read_only_fields = ['id', 'created_at']
     
-    def get_tasks_count(self, obj):
+    @extend_schema_field(int)
+    def get_tasks_count(self, obj) -> int:
         """Get number of tasks with this tag."""
         return obj.tasks.count()
     
@@ -145,12 +150,14 @@ class TaskDetailSerializer(serializers.ModelSerializer):
             'is_overdue', 'total_pomodoro_minutes', 'pomodoro_sessions_count'
         ]
     
-    def get_total_pomodoro_minutes(self, obj):
+    @extend_schema_field(int)
+    def get_total_pomodoro_minutes(self, obj) -> int:
         """Get total focus time from pomodoro sessions."""
         sessions = obj.pomodoro_sessions.filter(status='completed')
         return sum(s.actual_duration or 0 for s in sessions)
     
-    def get_pomodoro_sessions_count(self, obj):
+    @extend_schema_field(int)
+    def get_pomodoro_sessions_count(self, obj) -> int:
         """Get number of completed pomodoro sessions."""
         return obj.pomodoro_sessions.filter(status='completed').count()
 

@@ -49,6 +49,7 @@ class PomodoroSessionViewSet(viewsets.ModelViewSet):
     Provides operations for starting, completing, and tracking focus sessions.
     """
     permission_classes = [IsAuthenticated]
+    queryset = PomodoroSession.objects.none()  # Required for drf-spectacular
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ['session_type', 'status', 'task']
     ordering_fields = ['start_time', 'created_at']
@@ -56,6 +57,8 @@ class PomodoroSessionViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filter sessions to current user."""
+        if getattr(self, 'swagger_fake_view', False):
+            return PomodoroSession.objects.none()
         return PomodoroSession.objects.filter(
             user=self.request.user
         ).select_related('task')
@@ -73,7 +76,7 @@ class PomodoroSessionViewSet(viewsets.ModelViewSet):
         request={
             'type': 'object',
             'properties': {
-                'interruptions': {'type': 'integer', 'default': 0},
+                'interruptions_count': {'type': 'integer', 'default': 0},
                 'notes': {'type': 'string'}
             }
         },
@@ -86,9 +89,9 @@ class PomodoroSessionViewSet(viewsets.ModelViewSet):
         """Complete a pomodoro session."""
         session = self.get_object()
         
-        if session.status != 'in_progress':
+        if session.status != 'active':
             return Response(
-                {'error': 'Only in-progress sessions can be completed'},
+                {'error': 'Only active sessions can be completed'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
@@ -97,7 +100,7 @@ class PomodoroSessionViewSet(viewsets.ModelViewSet):
         session.actual_duration = int(
             (session.end_time - session.start_time).total_seconds() / 60
         )
-        session.interruptions = request.data.get('interruptions', 0)
+        session.interruptions_count = request.data.get('interruptions_count', 0)
         
         if 'notes' in request.data:
             session.notes = request.data['notes']
@@ -120,9 +123,9 @@ class PomodoroSessionViewSet(viewsets.ModelViewSet):
         """Cancel an in-progress session."""
         session = self.get_object()
         
-        if session.status != 'in_progress':
+        if session.status != 'active':
             return Response(
-                {'error': 'Only in-progress sessions can be cancelled'},
+                {'error': 'Only active sessions can be cancelled'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
@@ -146,7 +149,7 @@ class PomodoroSessionViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def active(self, request):
         """Get currently active session."""
-        session = self.get_queryset().filter(status='in_progress').first()
+        session = self.get_queryset().filter(status='active').first()
         
         if not session:
             return Response(
@@ -232,6 +235,7 @@ class HabitViewSet(viewsets.ModelViewSet):
     Provides operations for habit tracking with streak management.
     """
     permission_classes = [IsAuthenticated]
+    queryset = Habit.objects.none()  # Required for drf-spectacular
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['frequency', 'is_active']
     search_fields = ['name', 'description']
@@ -240,6 +244,8 @@ class HabitViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filter habits to current user."""
+        if getattr(self, 'swagger_fake_view', False):
+            return Habit.objects.none()
         return Habit.objects.filter(
             user=self.request.user
         ).prefetch_related('logs')

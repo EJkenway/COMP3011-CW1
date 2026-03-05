@@ -178,6 +178,25 @@ class Task(models.Model):
         help_text='User energy level when creating task'
     )
     
+    # Subtask support
+    parent_task = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='subtasks',
+        help_text='Parent task for subtask hierarchy'
+    )
+    
+    # Scheduling
+    reminder_date = models.DateTimeField(null=True, blank=True)
+    scheduled_date = models.DateTimeField(null=True, blank=True)
+    
+    # Additional info
+    location = models.CharField(max_length=255, blank=True)
+    external_url = models.URLField(max_length=500, blank=True)
+    notes = models.TextField(blank=True)
+    
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -322,6 +341,10 @@ class Habit(models.Model):
         default=1,
         help_text='Number of times to complete per period'
     )
+    
+    # Display customization
+    color = models.CharField(max_length=7, default='#10B981')
+    icon = models.CharField(max_length=50, blank=True, default='')
     
     # Streak tracking
     current_streak = models.PositiveIntegerField(default=0)

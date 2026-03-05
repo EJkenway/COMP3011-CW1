@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
+from drf_spectacular.utils import extend_schema_field
 
 User = get_user_model()
 
@@ -79,11 +80,13 @@ class UserSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'email', 'created_at', 'updated_at']
     
-    def get_tasks_count(self, obj):
+    @extend_schema_field(int)
+    def get_tasks_count(self, obj) -> int:
         """Get total number of user's tasks."""
         return obj.tasks.count()
     
-    def get_completed_tasks_count(self, obj):
+    @extend_schema_field(int)
+    def get_completed_tasks_count(self, obj) -> int:
         """Get number of completed tasks."""
         return obj.tasks.filter(status='completed').count()
 

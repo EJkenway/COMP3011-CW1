@@ -3,6 +3,8 @@ Productivity Feature Serializers (Pomodoro, Habits, Snapshots)
 """
 from rest_framework import serializers
 from django.utils import timezone
+from drf_spectacular.utils import extend_schema_field
+from typing import List, Dict, Any, Optional
 from core.models import PomodoroSession, Habit, HabitLog, ProductivitySnapshot
 
 
@@ -20,12 +22,12 @@ class PomodoroSessionSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'task', 'task_title', 'session_type', 'status',
             'planned_duration', 'actual_duration', 'duration_display',
-            'start_time', 'end_time', 'interruptions', 'notes',
-            'created_at'
+            'start_time', 'end_time', 'interruptions_count', 'notes'
         ]
-        read_only_fields = ['id', 'created_at', 'end_time', 'actual_duration']
+        read_only_fields = ['id', 'start_time', 'end_time', 'actual_duration']
     
-    def get_duration_display(self, obj):
+    @extend_schema_field(str)
+    def get_duration_display(self, obj) -> str:
         """Human-readable duration string."""
         if obj.actual_duration:
             hours, remainder = divmod(obj.actual_duration, 60)
@@ -68,10 +70,9 @@ class PomodoroSessionCreateSerializer(serializers.ModelSerializer):
         return value
     
     def create(self, validated_data):
-        """Create pomodoro session with current user and start time."""
+        """Create pomodoro session with current user."""
         validated_data['user'] = self.context['request'].user
-        validated_data['start_time'] = timezone.now()
-        validated_data['status'] = 'in_progress'
+        validated_data['status'] = 'active'
         return super().create(validated_data)
 
 
@@ -110,12 +111,14 @@ class HabitSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at'
         ]
     
-    def get_recent_completions(self, obj):
+    @extend_schema_field(list)
+    def get_recent_completions(self, obj) -> List[Dict[str, Any]]:
         """Get last 7 completion records."""
         logs = obj.logs.order_by('-completed_at')[:7]
         return HabitLogSerializer(logs, many=True).data
     
-    def get_completion_rate(self, obj):
+    @extend_schema_field(float)
+    def get_completion_rate(self, obj) -> float:
         """Calculate completion rate for the last 30 days."""
         from django.utils import timezone
         from datetime import timedelta
@@ -188,11 +191,13 @@ class ProductivitySnapshotSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'date', 'created_at']
     
-    def get_day_of_week(self, obj):
+    @extend_schema_field(str)
+    def get_day_of_week(self, obj) -> str:
         """Get day name."""
         return obj.date.strftime('%A')
     
-    def get_weather_summary(self, obj):
+    @extend_schema_field({'type': 'string', 'nullable': True})
+    def get_weather_summary(self, obj) -> Optional[str]:
         """Formatted weather summary."""
         if obj.weather_condition and obj.weather_temperature:
             return f"{obj.weather_condition}, {obj.weather_temperature}°C"

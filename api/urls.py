@@ -77,13 +77,6 @@ mcp_patterns = [
     path('execute/', MCPExecuteView.as_view(), name='mcp_execute'),
 ]
 
-# Documentation URLs
-docs_patterns = [
-    path('schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-]
-
 # API v1 URL patterns
 urlpatterns = [
     # Authentication
@@ -98,6 +91,8 @@ urlpatterns = [
     # MCP Integration
     path('mcp/', include((mcp_patterns, 'mcp'))),
     
-    # Documentation
-    path('docs/', include((docs_patterns, 'docs'))),
+    # Documentation (直接定义避免命名空间问题)
+    path('docs/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('docs/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('docs/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]

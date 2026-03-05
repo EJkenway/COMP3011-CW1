@@ -132,7 +132,26 @@ class TaskAnalyticsView(APIView):
                 type=int,
                 default=30
             )
-        ]
+        ],
+        responses={
+            200: {
+                'type': 'object',
+                'properties': {
+                    'total_tasks': {'type': 'integer'},
+                    'completed_tasks': {'type': 'integer'},
+                    'pending_tasks': {'type': 'integer'},
+                    'in_progress_tasks': {'type': 'integer'},
+                    'overdue_tasks': {'type': 'integer'},
+                    'completion_rate': {'type': 'number'},
+                    'avg_completion_time_minutes': {'type': 'number', 'nullable': True},
+                    'by_priority': {'type': 'object'},
+                    'by_energy_level': {'type': 'object'},
+                    'by_category': {'type': 'array'},
+                    'completion_by_hour': {'type': 'array'},
+                    'completion_by_day': {'type': 'array'},
+                }
+            }
+        }
     )
     def get(self, request):
         user = request.user
@@ -230,7 +249,24 @@ class HabitAnalyticsView(APIView):
                 type=int,
                 default=30
             )
-        ]
+        ],
+        responses={
+            200: {
+                'type': 'object',
+                'properties': {
+                    'total_habits': {'type': 'integer'},
+                    'active_habits': {'type': 'integer'},
+                    'total_completions': {'type': 'integer'},
+                    'avg_completion_rate': {'type': 'number'},
+                    'longest_streak': {'type': 'integer'},
+                    'current_longest_streak': {'type': 'integer'},
+                    'habits_summary': {'type': 'array'},
+                    'best_performing_habits': {'type': 'array'},
+                    'needs_attention': {'type': 'array'},
+                    'completion_heatmap': {'type': 'array'},
+                }
+            }
+        }
     )
     def get(self, request):
         user = request.user
@@ -320,7 +356,24 @@ class PomodoroAnalyticsView(APIView):
                 type=int,
                 default=30
             )
-        ]
+        ],
+        responses={
+            200: {
+                'type': 'object',
+                'properties': {
+                    'total_sessions': {'type': 'integer'},
+                    'completed_sessions': {'type': 'integer'},
+                    'total_focus_minutes': {'type': 'integer'},
+                    'total_break_minutes': {'type': 'integer'},
+                    'avg_session_duration': {'type': 'number'},
+                    'avg_interruptions': {'type': 'number'},
+                    'completion_rate': {'type': 'number'},
+                    'sessions_by_hour': {'type': 'array'},
+                    'sessions_by_day': {'type': 'array'},
+                    'most_focused_tasks': {'type': 'array'},
+                }
+            }
+        }
     )
     def get(self, request):
         user = request.user
@@ -340,7 +393,7 @@ class PomodoroAnalyticsView(APIView):
         total_focus = focus_sessions.aggregate(total=Sum('actual_duration'))['total'] or 0
         total_breaks = break_sessions.aggregate(total=Sum('actual_duration'))['total'] or 0
         avg_duration = focus_sessions.aggregate(avg=Avg('actual_duration'))['avg'] or 0
-        avg_interruptions = focus_sessions.aggregate(avg=Avg('interruptions'))['avg'] or 0
+        avg_interruptions = focus_sessions.aggregate(avg=Avg('interruptions_count'))['avg'] or 0
         
         # By hour
         by_hour = list(
@@ -420,7 +473,25 @@ class ProductivityTrendView(APIView):
                 type=str,
                 default='month'
             )
-        ]
+        ],
+        responses={
+            200: {
+                'type': 'object',
+                'properties': {
+                    'period': {'type': 'string'},
+                    'start_date': {'type': 'string'},
+                    'end_date': {'type': 'string'},
+                    'productivity_trend': {'type': 'array'},
+                    'focus_time_trend': {'type': 'array'},
+                    'avg_productivity_score': {'type': 'number'},
+                    'productivity_change': {'type': 'number'},
+                    'avg_daily_tasks': {'type': 'number'},
+                    'avg_daily_focus_minutes': {'type': 'number'},
+                    'insights': {'type': 'array'},
+                    'recommendations': {'type': 'array'},
+                }
+            }
+        }
     )
     def get(self, request):
         user = request.user

@@ -59,6 +59,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     """
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated]
+    queryset = Category.objects.none()  # Required for drf-spectacular
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name', 'description']
     ordering_fields = ['name', 'created_at']
@@ -66,6 +67,8 @@ class CategoryViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filter categories to current user only."""
+        if getattr(self, 'swagger_fake_view', False):
+            return Category.objects.none()
         return Category.objects.filter(
             user=self.request.user
         ).select_related('parent').prefetch_related('subcategories')
@@ -143,6 +146,7 @@ class TagViewSet(viewsets.ModelViewSet):
     """
     serializer_class = TagSerializer
     permission_classes = [IsAuthenticated]
+    queryset = Tag.objects.none()  # Required for drf-spectacular
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['name']
     ordering_fields = ['name', 'created_at']
@@ -150,6 +154,8 @@ class TagViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filter tags to current user only."""
+        if getattr(self, 'swagger_fake_view', False):
+            return Tag.objects.none()
         return Tag.objects.filter(user=self.request.user)
 
 
@@ -215,6 +221,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     Provides full CRUD operations with filtering, searching, and custom actions.
     """
     permission_classes = [IsAuthenticated]
+    queryset = Task.objects.none()  # Required for drf-spectacular
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['status', 'priority', 'category', 'energy_level']
     search_fields = ['title', 'description', 'notes']
@@ -223,6 +230,9 @@ class TaskViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filter tasks to current user with optimized queries."""
+        if getattr(self, 'swagger_fake_view', False):
+            return Task.objects.none()
+        
         queryset = Task.objects.filter(
             user=self.request.user
         ).select_related('category').prefetch_related('tags')

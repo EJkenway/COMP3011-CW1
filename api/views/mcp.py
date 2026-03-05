@@ -97,6 +97,15 @@ Each tool includes:
 - Required authentication level
         """,
         tags=['MCP'],
+        responses={
+            200: {
+                'type': 'object',
+                'properties': {
+                    'tools': {'type': 'array', 'items': {'type': 'object'}},
+                    'count': {'type': 'integer'}
+                }
+            }
+        }
     )
     def get(self, request):
         tools = [
@@ -508,8 +517,7 @@ Execute a tool by name with the provided arguments.
             task_id=args.get('task_id'),
             session_type='focus',
             planned_duration=args.get('duration', 25),
-            status='in_progress',
-            start_time=timezone.now(),
+            status='active',
         )
         return {
             'id': str(session.id),
