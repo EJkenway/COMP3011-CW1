@@ -1,22 +1,48 @@
 """
-URL configuration for todo_api project.
+URL configuration for Smart Productivity Analytics Platform API.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+API versioning: All API endpoints are prefixed with /api/v1/
+
+Documentation:
+- Swagger UI: /api/v1/docs/swagger/
+- ReDoc: /api/v1/docs/redoc/
+- OpenAPI Schema: /api/v1/docs/schema/
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.http import JsonResponse
+
+
+def api_root(request):
+    """API root endpoint with basic info."""
+    return JsonResponse({
+        'name': 'Smart Productivity Analytics Platform API',
+        'version': '1.0.0',
+        'documentation': {
+            'swagger': '/api/v1/docs/swagger/',
+            'redoc': '/api/v1/docs/redoc/',
+            'openapi_schema': '/api/v1/docs/schema/',
+        },
+        'endpoints': {
+            'auth': '/api/v1/auth/',
+            'tasks': '/api/v1/tasks/',
+            'categories': '/api/v1/categories/',
+            'tags': '/api/v1/tags/',
+            'habits': '/api/v1/habits/',
+            'pomodoro': '/api/v1/pomodoro/',
+            'analytics': '/api/v1/analytics/',
+            'mcp': '/api/v1/mcp/',
+        }
+    })
+
 
 urlpatterns = [
+    # Admin
     path('admin/', admin.site.urls),
+    
+    # API root
+    path('', api_root, name='api_root'),
+    
+    # API v1
+    path('api/v1/', include('api.urls')),
 ]
