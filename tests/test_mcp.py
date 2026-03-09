@@ -82,7 +82,7 @@ class TestMCPExecute:
             'tool': 'create_task',
             'arguments': {
                 'title': 'MCP Created Task',
-                'priority': 'high',
+                'priority': 4,  # HIGH
                 'description': 'Created via MCP'
             }
         }

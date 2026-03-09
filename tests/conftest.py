@@ -80,7 +80,7 @@ def task(db, user, category):
         title='Test Task',
         description='This is a test task',
         status='pending',
-        priority='medium',
+        priority=3,  # MEDIUM
         category=category,
         due_date=timezone.now() + timedelta(days=1)
     )
@@ -106,7 +106,7 @@ def overdue_task(db, user):
         user=user,
         title='Overdue Task',
         status='pending',
-        priority='high',
+        priority=4,  # HIGH
         due_date=timezone.now() - timedelta(days=2)
     )
 

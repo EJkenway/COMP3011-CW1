@@ -40,14 +40,14 @@ class TestTaskList:
     
     def test_list_tasks_filter_by_priority(self, auth_client, user):
         """Test filtering tasks by priority."""
-        Task.objects.create(user=user, title='High Priority', priority='high')
-        Task.objects.create(user=user, title='Low Priority', priority='low')
+        Task.objects.create(user=user, title='High Priority', priority=4)  # HIGH
+        Task.objects.create(user=user, title='Low Priority', priority=2)  # LOW
         
-        response = auth_client.get('/api/v1/tasks/', {'priority': 'high'})
+        response = auth_client.get('/api/v1/tasks/', {'priority': 4})
         
         assert response.status_code == status.HTTP_200_OK
         assert response.data['count'] == 1
-        assert response.data['results'][0]['priority'] == 'high'
+        assert response.data['results'][0]['priority'] == 4
     
     def test_list_tasks_search(self, auth_client, user):
         """Test searching tasks."""
@@ -62,14 +62,14 @@ class TestTaskList:
     
     def test_list_tasks_ordering(self, auth_client, user):
         """Test ordering tasks."""
-        task1 = Task.objects.create(user=user, title='First', priority='low')
-        task2 = Task.objects.create(user=user, title='Second', priority='urgent')
+        task1 = Task.objects.create(user=user, title='First', priority=2)  # LOW
+        task2 = Task.objects.create(user=user, title='Second', priority=5)  # HIGHEST
         
         response = auth_client.get('/api/v1/tasks/', {'ordering': '-priority'})
         
         assert response.status_code == status.HTTP_200_OK
-        # Urgent should come first
-        assert response.data['results'][0]['priority'] == 'urgent'
+        # Highest priority should come first
+        assert response.data['results'][0]['priority'] == 5
     
     def test_list_tasks_pagination(self, auth_client, user):
         """Test task pagination."""
@@ -104,7 +104,7 @@ class TestTaskCreate:
             'title': 'Complete Project',
             'description': 'Finish the API project',
             'status': 'pending',
-            'priority': 'high',
+            'priority': 4,  # HIGH
             'energy_level': 'high',
             'category': str(category.id),
             'tags': [str(tag.id)],
@@ -116,7 +116,7 @@ class TestTaskCreate:
         
         assert response.status_code == status.HTTP_201_CREATED
         task = Task.objects.get(title='Complete Project')
-        assert task.priority == 'high'
+        assert task.priority == 4  # HIGH
         assert task.category == category
         assert tag in task.tags.all()
     
@@ -124,7 +124,7 @@ class TestTaskCreate:
         """Test creating task with invalid priority fails."""
         data = {
             'title': 'Bad Task',
-            'priority': 'invalid_priority'
+            'priority': 99  # Invalid priority value
         }
         
         response = auth_client.post('/api/v1/tasks/', data)
@@ -184,7 +184,7 @@ class TestTaskUpdate:
         data = {
             'title': 'Completely Updated',
             'description': 'New description',
-            'priority': 'urgent',
+            'priority': 5,  # HIGHEST
             'status': 'in_progress'
         }
         
@@ -193,7 +193,7 @@ class TestTaskUpdate:
         assert response.status_code == status.HTTP_200_OK
         task.refresh_from_db()
         assert task.title == 'Completely Updated'
-        assert task.priority == 'urgent'
+        assert task.priority == 5  # HIGHEST
     
     def test_update_other_user_task(self, auth_client, another_user):
         """Test updating another user's task fails."""
