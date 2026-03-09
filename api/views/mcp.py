@@ -522,7 +522,7 @@ Execute a tool by name with the provided arguments.
             habit=habit,
             notes=args.get('notes', '')
         )
-        habit.update_streak()
+        habit.record_completion()
         
         return {
             'habit_id': str(habit.id),
@@ -586,18 +586,18 @@ Execute a tool by name with the provided arguments.
         if available_minutes:
             queryset = queryset.filter(estimated_minutes__lte=available_minutes)
         
-        # Prioritize: overdue > urgent > high priority > due soon
+        # Prioritize: overdue > highest priority (5) > high priority (4) > due soon
         overdue = queryset.filter(due_date__lt=timezone.now()).order_by('due_date').first()
         if overdue:
             reason = "This task is overdue"
             task = overdue
         else:
-            urgent = queryset.filter(priority='urgent').order_by('due_date').first()
-            if urgent:
-                reason = "This is an urgent priority task"
-                task = urgent
+            highest = queryset.filter(priority=5).order_by('due_date').first()
+            if highest:
+                reason = "This is a highest priority task"
+                task = highest
             else:
-                high = queryset.filter(priority='high').order_by('due_date').first()
+                high = queryset.filter(priority=4).order_by('due_date').first()
                 if high:
                     reason = "This is a high priority task"
                     task = high
