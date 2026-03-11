@@ -8,6 +8,9 @@ from .auth import (
     RegisterView,
     ProfileView,
     ChangePasswordView,
+    CustomTokenObtainPairView,
+    CustomTokenRefreshView,
+    CustomTokenBlacklistView,
 )
 from .tasks import (
     CategoryViewSet,
