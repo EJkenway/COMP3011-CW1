@@ -51,7 +51,7 @@ and how to interact with the API programmatically.
         return Response({
             'name': 'Smart Productivity Analytics Platform',
             'version': '1.0.0',
-            'description': 'A comprehensive API for task management, habit tracking, and productivity analytics.',
+            'description': 'A comprehensive API for task management and productivity analytics.',
             'protocol': 'MCP/1.0',
             'capabilities': {
                 'tools': True,

@@ -28,8 +28,6 @@ def api_root(request):
             'tasks': '/api/v1/tasks/',
             'categories': '/api/v1/categories/',
             'tags': '/api/v1/tags/',
-            'habits': '/api/v1/habits/',
-            'pomodoro': '/api/v1/pomodoro/',
             'analytics': '/api/v1/analytics/',
             'mcp': '/api/v1/mcp/',
         }

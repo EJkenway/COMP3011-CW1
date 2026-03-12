@@ -1,8 +1,8 @@
 """
 Django settings for todo_api project.
 
-Smart Productivity Analytics Platform - A RESTful API for intelligent task management,
-habit tracking, and productivity analytics.
+Smart Productivity Analytics Platform - A RESTful API for intelligent task management
+and productivity analytics.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/5.2/topics/settings/
@@ -241,11 +241,8 @@ This API is designed to be Model Context Protocol (MCP) compatible for AI agent 
     # Fix enum naming collisions
     'ENUM_NAME_OVERRIDES': {
         'TaskStatusEnum': 'core.models.Task.Status',
-        'PomodoroStatusEnum': 'core.models.PomodoroSession.SessionStatus',
-        'PomodoroTypeEnum': 'core.models.PomodoroSession.SessionType',
         'PriorityEnum': 'core.models.Task.Priority',
         'EnergyLevelEnum': 'core.models.Task.EnergyLevel',
-        'HabitFrequencyEnum': 'core.models.Habit.Frequency',
     },
     
     'TAGS': [

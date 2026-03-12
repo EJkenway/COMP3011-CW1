@@ -16,10 +16,6 @@ class DailyStatsSerializer(serializers.Serializer):
     tasks_pending = serializers.IntegerField()
     tasks_overdue = serializers.IntegerField()
     completion_rate = serializers.FloatField()
-    total_focus_minutes = serializers.IntegerField()
-    pomodoro_sessions = serializers.IntegerField()
-    habits_completed = serializers.IntegerField()
-    habits_missed = serializers.IntegerField()
     productivity_score = serializers.FloatField()
     most_productive_hour = serializers.IntegerField(allow_null=True)
     top_categories = serializers.ListField(
@@ -38,10 +34,6 @@ class WeeklyStatsSerializer(serializers.Serializer):
     total_tasks_created = serializers.IntegerField()
     total_tasks_completed = serializers.IntegerField()
     avg_completion_rate = serializers.FloatField()
-    total_focus_minutes = serializers.IntegerField()
-    avg_daily_focus_minutes = serializers.FloatField()
-    total_pomodoro_sessions = serializers.IntegerField()
-    total_habits_completed = serializers.IntegerField()
     avg_productivity_score = serializers.FloatField()
     best_day = serializers.DictField()
     daily_breakdown = serializers.ListField(
@@ -67,13 +59,7 @@ class ProductivityTrendSerializer(serializers.Serializer):
     productivity_trend = serializers.ListField(
         child=serializers.DictField()
     )
-    focus_time_trend = serializers.ListField(
-        child=serializers.DictField()
-    )
     completion_trend = serializers.ListField(
-        child=serializers.DictField()
-    )
-    habit_streak_trend = serializers.ListField(
         child=serializers.DictField()
     )
     
@@ -81,8 +67,6 @@ class ProductivityTrendSerializer(serializers.Serializer):
     avg_productivity_score = serializers.FloatField()
     productivity_change = serializers.FloatField()  # % change from previous period
     avg_daily_tasks = serializers.FloatField()
-    avg_daily_focus_minutes = serializers.FloatField()
-    best_streak = serializers.IntegerField()
     
     # Insights
     insights = serializers.ListField(
@@ -116,58 +100,5 @@ class TaskAnalyticsSerializer(serializers.Serializer):
         child=serializers.DictField()
     )
     completion_by_day = serializers.ListField(
-        child=serializers.DictField()
-    )
-
-
-class HabitAnalyticsSerializer(serializers.Serializer):
-    """
-    Serializer for habit-specific analytics.
-    """
-    total_habits = serializers.IntegerField()
-    active_habits = serializers.IntegerField()
-    total_completions = serializers.IntegerField()
-    avg_completion_rate = serializers.FloatField()
-    
-    longest_streak = serializers.IntegerField()
-    current_longest_streak = serializers.IntegerField()
-    
-    habits_summary = serializers.ListField(
-        child=serializers.DictField()
-    )
-    
-    completion_heatmap = serializers.ListField(
-        child=serializers.DictField()
-    )
-    
-    best_performing_habits = serializers.ListField(
-        child=serializers.DictField()
-    )
-    needs_attention = serializers.ListField(
-        child=serializers.DictField()
-    )
-
-
-class PomodoroAnalyticsSerializer(serializers.Serializer):
-    """
-    Serializer for pomodoro-specific analytics.
-    """
-    total_sessions = serializers.IntegerField()
-    completed_sessions = serializers.IntegerField()
-    total_focus_minutes = serializers.IntegerField()
-    total_break_minutes = serializers.IntegerField()
-    
-    avg_session_duration = serializers.FloatField()
-    avg_interruptions = serializers.FloatField()
-    completion_rate = serializers.FloatField()
-    
-    sessions_by_hour = serializers.ListField(
-        child=serializers.DictField()
-    )
-    sessions_by_day = serializers.ListField(
-        child=serializers.DictField()
-    )
-    
-    most_focused_tasks = serializers.ListField(
         child=serializers.DictField()
     )

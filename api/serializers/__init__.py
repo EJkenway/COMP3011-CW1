@@ -17,14 +17,6 @@ from .tasks import (
     TaskDetailSerializer,
     TaskCreateUpdateSerializer,
 )
-from .productivity import (
-    PomodoroSessionSerializer,
-    PomodoroSessionCreateSerializer,
-    HabitSerializer,
-    HabitCreateUpdateSerializer,
-    HabitLogSerializer,
-    ProductivitySnapshotSerializer,
-)
 from .analytics import (
     DailyStatsSerializer,
     WeeklyStatsSerializer,
@@ -43,13 +35,6 @@ __all__ = [
     'TaskListSerializer',
     'TaskDetailSerializer',
     'TaskCreateUpdateSerializer',
-    # Productivity
-    'PomodoroSessionSerializer',
-    'PomodoroSessionCreateSerializer',
-    'HabitSerializer',
-    'HabitCreateUpdateSerializer',
-    'HabitLogSerializer',
-    'ProductivitySnapshotSerializer',
     # Analytics
     'DailyStatsSerializer',
     'WeeklyStatsSerializer',

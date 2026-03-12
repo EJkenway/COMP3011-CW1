@@ -6,7 +6,7 @@ Tests for AI agent integration capabilities.
 import pytest
 from rest_framework import status
 
-from core.models import Task, Category, Habit
+from core.models import Task, Category
 
 
 @pytest.mark.django_db
@@ -68,7 +68,6 @@ class TestMCPTools:
         assert 'create_task' in tool_names
         assert 'list_tasks' in tool_names
         assert 'complete_task' in tool_names
-        assert 'start_pomodoro' in tool_names
         assert 'suggest_next_task' in tool_names
 
 
@@ -174,38 +173,6 @@ class TestMCPExecute:
         assert response.data['success'] is True
         assert len(response.data['result']) >= 1
         assert 'days_overdue' in response.data['result'][0]
-    
-    def test_execute_start_pomodoro(self, auth_client, task):
-        """Test executing start_pomodoro tool."""
-        data = {
-            'tool': 'start_pomodoro',
-            'arguments': {
-                'task_id': str(task.id),
-                'duration': 25
-            }
-        }
-        
-        response = auth_client.post('/api/v1/mcp/execute/', data, format='json')
-        
-        assert response.status_code == status.HTTP_200_OK
-        assert response.data['success'] is True
-        assert response.data['result']['planned_duration'] == 25
-    
-    def test_execute_complete_habit(self, auth_client, habit):
-        """Test executing complete_habit tool."""
-        data = {
-            'tool': 'complete_habit',
-            'arguments': {
-                'habit_id': str(habit.id),
-                'notes': 'Completed via MCP'
-            }
-        }
-        
-        response = auth_client.post('/api/v1/mcp/execute/', data, format='json')
-        
-        assert response.status_code == status.HTTP_200_OK
-        assert response.data['success'] is True
-        assert response.data['result']['habit_name'] == habit.name
     
     def test_execute_get_productivity_summary(self, auth_client):
         """Test executing get_productivity_summary tool."""

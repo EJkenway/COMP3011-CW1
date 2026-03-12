@@ -109,31 +109,3 @@ def overdue_task(db, user):
         priority=4,  # HIGH
         due_date=timezone.now() - timedelta(days=2)
     )
-
-
-@pytest.fixture
-def habit(db, user):
-    """Create a test habit."""
-    from core.models import Habit
-    return Habit.objects.create(
-        user=user,
-        name='Daily Exercise',
-        description='Exercise for 30 minutes',
-        frequency='daily',
-        target_count=1,
-        color='#10B981'
-    )
-
-
-@pytest.fixture
-def pomodoro_session(db, user, task):
-    """Create a test pomodoro session."""
-    from core.models import PomodoroSession
-    return PomodoroSession.objects.create(
-        user=user,
-        task=task,
-        session_type='focus',
-        planned_duration=25,
-        status='in_progress',
-        start_time=timezone.now()
-    )
