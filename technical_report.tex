@@ -158,19 +158,68 @@ Schema decorators (\texttt{@extend\_schema}) provide endpoint-specific descripti
 \section{Use of Generative AI}
 % =============================================================================
 
-In accordance with coursework guidelines, this section declares the use of Generative AI tools during development:
+In accordance with coursework guidelines, this section provides a comprehensive declaration of Generative AI tools usage during the development process.
 
-\textbf{Tools Used}: GitHub Copilot (Claude) was employed throughout the development process.
+\subsection{Tools Employed}
 
-\textbf{Applications}:
+GitHub Copilot (powered by Claude) was utilized as the primary AI assistant throughout the project lifecycle. The tool was integrated into the development environment (VS Code) and provided real-time assistance during coding sessions.
+
+\subsection{Detailed AI Contributions by Component}
+
+\textbf{1. Model Context Protocol (MCP) Integration}
+
+The MCP feature represents a significant AI-assisted contribution to this project:
 \begin{itemize}[noitemsep]
-    \item \textbf{Code Generation}: Initial boilerplate for models, serializers, and viewsets was generated with AI assistance, then reviewed and refined
-    \item \textbf{Debugging}: AI was used to diagnose issues such as drf-spectacular enum naming collisions and test fixture configuration
-    \item \textbf{Documentation}: Technical report structure and content were developed with AI assistance
-    \item \textbf{Test Development}: Test cases were co-developed with AI to ensure comprehensive coverage
+    \item \textbf{Concept Suggestion}: The idea of implementing MCP endpoints for AI agent integration was proposed by the AI assistant, identifying an emerging standard that would differentiate this API from conventional task management systems
+    \item \textbf{Protocol Research}: AI assisted in understanding the MCP specification and translating protocol requirements into Django REST Framework implementation patterns
+    \item \textbf{Tool Schema Design}: The JSON Schema definitions for MCP tools (e.g., \texttt{create\_task}, \texttt{suggest\_next\_task}) were collaboratively designed with AI guidance on schema structure and validation requirements
+    \item \textbf{Intelligent Recommendations}: The \texttt{suggest\_next\_task} tool, which recommends tasks based on user energy levels, was refined with AI assistance to implement energy-priority matching logic
 \end{itemize}
 
-\textbf{Critical Evaluation}: While AI assistance accelerated development, all generated code was reviewed for correctness, security implications, and adherence to project requirements. AI suggestions for authentication were particularly scrutinized to ensure proper security implementation.
+\textbf{2. Core Architecture and Code Generation}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Project Structure}: AI provided recommendations for organizing Django apps, separating concerns between models, serializers, and views
+    \item \textbf{Model Design}: Initial model definitions including field choices, relationships, and UUID primary keys were generated with AI assistance
+    \item \textbf{Serializer Implementation}: Nested serializers and custom validation logic were co-developed with AI suggestions
+    \item \textbf{ViewSet Patterns}: Custom actions (e.g., \texttt{complete}, \texttt{bulk\_update\_status}) were implemented following AI-recommended patterns
+\end{itemize}
+
+\textbf{3. Debugging and Problem Resolution}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{drf-spectacular Issues}: AI diagnosed and resolved OpenAPI schema generation problems, including enum naming collisions and component conflicts
+    \item \textbf{Test Failures}: When MCP-related tests failed due to method naming inconsistencies (\texttt{update\_streak} vs \texttt{record\_completion}) and priority type mismatches (string vs integer), AI identified root causes and provided fixes
+    \item \textbf{Authentication Flow}: JWT token handling edge cases were debugged with AI assistance
+\end{itemize}
+
+\textbf{4. Testing and Quality Assurance}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Test Structure}: pytest-django configuration and fixture design followed AI recommendations
+    \item \textbf{Test Coverage}: AI assisted in identifying edge cases and boundary conditions for comprehensive test coverage
+    \item \textbf{Fixture Development}: Reusable test fixtures in \texttt{conftest.py} were developed collaboratively
+\end{itemize}
+
+\textbf{5. Documentation}
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Technical Report}: This report's structure, content organization, and LaTeX formatting were developed with AI assistance
+    \item \textbf{API Descriptions}: Endpoint descriptions and schema documentation used in drf-spectacular decorators were refined with AI input
+\end{itemize}
+
+\subsection{Critical Evaluation and Human Oversight}
+
+While AI assistance significantly accelerated development, rigorous human oversight was maintained:
+
+\begin{itemize}[noitemsep]
+    \item \textbf{Security Review}: All authentication and authorization code was manually reviewed to ensure proper implementation of security controls
+    \item \textbf{Logic Verification}: Business logic, particularly streak calculation and energy-based task suggestions, was validated against expected behavior
+    \item \textbf{Architectural Decisions}: Final decisions on database schema, API structure, and technology choices were made by the developer after evaluating AI suggestions
+    \item \textbf{Code Quality}: Generated code was refactored for readability, consistency, and adherence to Django best practices
+\end{itemize}
+
+The collaboration model was iterative: AI generated initial implementations, the developer tested and identified issues, and AI assisted in diagnosing and resolving problems. This workflow combined AI efficiency with human judgment and domain understanding.
 
 % =============================================================================
 \section{Conclusion}
