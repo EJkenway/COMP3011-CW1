@@ -23,14 +23,9 @@ from .views import (
     CategoryViewSet,
     TagViewSet,
     TaskViewSet,
-    # Productivity
-    PomodoroSessionViewSet,
-    HabitViewSet,
     # Analytics
     AnalyticsDashboardView,
     TaskAnalyticsView,
-    HabitAnalyticsView,
-    PomodoroAnalyticsView,
     ProductivityTrendView,
     # MCP
     MCPCapabilitiesView,
@@ -43,8 +38,6 @@ router = DefaultRouter()
 router.register(r'categories', CategoryViewSet, basename='category')
 router.register(r'tags', TagViewSet, basename='tag')
 router.register(r'tasks', TaskViewSet, basename='task')
-router.register(r'pomodoro', PomodoroSessionViewSet, basename='pomodoro')
-router.register(r'habits', HabitViewSet, basename='habit')
 
 # Authentication URLs
 auth_patterns = [
@@ -63,8 +56,6 @@ auth_patterns = [
 analytics_patterns = [
     path('dashboard/', AnalyticsDashboardView.as_view(), name='analytics_dashboard'),
     path('tasks/', TaskAnalyticsView.as_view(), name='analytics_tasks'),
-    path('habits/', HabitAnalyticsView.as_view(), name='analytics_habits'),
-    path('pomodoro/', PomodoroAnalyticsView.as_view(), name='analytics_pomodoro'),
     path('trends/', ProductivityTrendView.as_view(), name='analytics_trends'),
 ]
 

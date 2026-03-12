@@ -17,15 +17,9 @@ from .tasks import (
     TagViewSet,
     TaskViewSet,
 )
-from .productivity import (
-    PomodoroSessionViewSet,
-    HabitViewSet,
-)
 from .analytics import (
     AnalyticsDashboardView,
     TaskAnalyticsView,
-    HabitAnalyticsView,
-    PomodoroAnalyticsView,
     ProductivityTrendView,
 )
 from .mcp import (
@@ -39,18 +33,16 @@ __all__ = [
     'RegisterView',
     'ProfileView',
     'ChangePasswordView',
+    'CustomTokenObtainPairView',
+    'CustomTokenRefreshView',
+    'CustomTokenBlacklistView',
     # Tasks
     'CategoryViewSet',
     'TagViewSet',
     'TaskViewSet',
-    # Productivity
-    'PomodoroSessionViewSet',
-    'HabitViewSet',
     # Analytics
     'AnalyticsDashboardView',
     'TaskAnalyticsView',
-    'HabitAnalyticsView',
-    'PomodoroAnalyticsView',
     'ProductivityTrendView',
     # MCP
     'MCPCapabilitiesView',
