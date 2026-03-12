@@ -13,7 +13,7 @@ from rest_framework import status
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
-from core.models import Task, Category, Tag, Habit, PomodoroSession
+from core.models import Task, Category, Tag
 from api.serializers.inline import MCPExecuteRequestSerializer, MCPExecuteResponseSerializer
 
 
@@ -51,7 +51,7 @@ and how to interact with the API programmatically.
         return Response({
             'name': 'Smart Productivity Analytics Platform',
             'version': '1.0.0',
-            'description': 'A comprehensive API for task management, habit tracking, and productivity analytics.',
+            'description': 'A comprehensive API for task management and productivity analytics.',
             'protocol': 'MCP/1.0',
             'capabilities': {
                 'tools': True,
@@ -215,44 +215,6 @@ Each tool includes:
                 }
             },
             {
-                'name': 'start_pomodoro',
-                'description': 'Start a new pomodoro focus session',
-                'inputSchema': {
-                    'type': 'object',
-                    'properties': {
-                        'task_id': {
-                            'type': 'string',
-                            'format': 'uuid',
-                            'description': 'Optional task to associate with the session'
-                        },
-                        'duration': {
-                            'type': 'integer',
-                            'default': 25,
-                            'minimum': 1,
-                            'maximum': 180,
-                            'description': 'Session duration in minutes'
-                        }
-                    }
-                }
-            },
-            {
-                'name': 'complete_habit',
-                'description': 'Log a habit completion',
-                'inputSchema': {
-                    'type': 'object',
-                    'properties': {
-                        'habit_id': {
-                            'type': 'string',
-                            'format': 'uuid'
-                        },
-                        'notes': {
-                            'type': 'string'
-                        }
-                    },
-                    'required': ['habit_id']
-                }
-            },
-            {
                 'name': 'get_productivity_summary',
                 'description': 'Get a summary of productivity metrics for today or a specified period',
                 'inputSchema': {
@@ -371,8 +333,6 @@ Execute a tool by name with the provided arguments.
             'complete_task': self._complete_task,
             'get_today_tasks': self._get_today_tasks,
             'get_overdue_tasks': self._get_overdue_tasks,
-            'start_pomodoro': self._start_pomodoro,
-            'complete_habit': self._complete_habit,
             'get_productivity_summary': self._get_productivity_summary,
             'suggest_next_task': self._suggest_next_task,
             'create_category': self._create_category,
@@ -497,40 +457,6 @@ Execute a tool by name with the provided arguments.
             for t in tasks
         ]
     
-    def _start_pomodoro(self, user, args):
-        """Start a pomodoro session."""
-        session = PomodoroSession.objects.create(
-            user=user,
-            task_id=args.get('task_id'),
-            session_type='focus',
-            planned_duration=args.get('duration', 25),
-            status='active',
-        )
-        return {
-            'id': str(session.id),
-            'session_type': session.session_type,
-            'planned_duration': session.planned_duration,
-            'start_time': session.start_time.isoformat(),
-        }
-    
-    def _complete_habit(self, user, args):
-        """Log a habit completion."""
-        from core.models import HabitLog
-        
-        habit = Habit.objects.get(user=user, id=args['habit_id'])
-        log = HabitLog.objects.create(
-            habit=habit,
-            notes=args.get('notes', '')
-        )
-        habit.update_streak()
-        
-        return {
-            'habit_id': str(habit.id),
-            'habit_name': habit.name,
-            'current_streak': habit.current_streak,
-            'logged_at': log.completed_at.isoformat(),
-        }
-    
     def _get_productivity_summary(self, user, args):
         """Get productivity summary."""
         from django.db.models import Sum, Count
@@ -548,24 +474,11 @@ Execute a tool by name with the provided arguments.
         completed = tasks.filter(status='completed').count()
         total = tasks.count()
         
-        focus_minutes = PomodoroSession.objects.filter(
-            user=user,
-            start_time__date__gte=start_date,
-            status='completed',
-            session_type='focus'
-        ).aggregate(total=Sum('actual_duration'))['total'] or 0
-        
-        habits_completed = Habit.objects.filter(user=user).aggregate(
-            total=Sum('current_streak')
-        )['total'] or 0
-        
         return {
             'period': period,
             'tasks_created': total,
             'tasks_completed': completed,
             'completion_rate': round((completed / max(total, 1)) * 100, 1),
-            'focus_minutes': focus_minutes,
-            'habits_streak_total': habits_completed,
         }
     
     def _suggest_next_task(self, user, args):
@@ -586,18 +499,18 @@ Execute a tool by name with the provided arguments.
         if available_minutes:
             queryset = queryset.filter(estimated_minutes__lte=available_minutes)
         
-        # Prioritize: overdue > urgent > high priority > due soon
+        # Prioritize: overdue > highest priority (5) > high priority (4) > due soon
         overdue = queryset.filter(due_date__lt=timezone.now()).order_by('due_date').first()
         if overdue:
             reason = "This task is overdue"
             task = overdue
         else:
-            urgent = queryset.filter(priority='urgent').order_by('due_date').first()
-            if urgent:
-                reason = "This is an urgent priority task"
-                task = urgent
+            highest = queryset.filter(priority=5).order_by('due_date').first()
+            if highest:
+                reason = "This is a highest priority task"
+                task = highest
             else:
-                high = queryset.filter(priority='high').order_by('due_date').first()
+                high = queryset.filter(priority=4).order_by('due_date').first()
                 if high:
                     reason = "This is a high priority task"
                     task = high

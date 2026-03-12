@@ -1,8 +1,8 @@
 """
 Django settings for todo_api project.
 
-Smart Productivity Analytics Platform - A RESTful API for intelligent task management,
-habit tracking, and productivity analytics.
+Smart Productivity Analytics Platform - A RESTful API for intelligent task management
+and productivity analytics.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/5.2/topics/settings/
@@ -208,16 +208,14 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': '''
 ## Overview
 
-A comprehensive RESTful API for intelligent task management, habit tracking, 
-and productivity analytics. Built with Django REST Framework.
+A comprehensive RESTful API for intelligent task management and productivity analytics. 
+Built with Django REST Framework.
 
 ## Features
 
 - **Task Management**: Full CRUD operations with categories, tags, and priorities
-- **Habit Tracking**: Daily/weekly habits with streak tracking
-- **Pomodoro Timer**: Focus session management and tracking
-- **Productivity Analytics**: Daily snapshots, trends, and insights
-- **Weather Integration**: Correlate productivity with weather conditions
+- **Productivity Analytics**: Dashboard, trends, and insights
+- **MCP Integration**: Model Context Protocol compatible for AI agent integration
 
 ## Authentication
 
@@ -243,11 +241,8 @@ This API is designed to be Model Context Protocol (MCP) compatible for AI agent 
     # Fix enum naming collisions
     'ENUM_NAME_OVERRIDES': {
         'TaskStatusEnum': 'core.models.Task.Status',
-        'PomodoroStatusEnum': 'core.models.PomodoroSession.SessionStatus',
-        'PomodoroTypeEnum': 'core.models.PomodoroSession.SessionType',
         'PriorityEnum': 'core.models.Task.Priority',
         'EnergyLevelEnum': 'core.models.Task.EnergyLevel',
-        'HabitFrequencyEnum': 'core.models.Habit.Frequency',
     },
     
     'TAGS': [
@@ -255,8 +250,6 @@ This API is designed to be Model Context Protocol (MCP) compatible for AI agent 
         {'name': 'Tasks', 'description': 'Task CRUD operations'},
         {'name': 'Categories', 'description': 'Task category management'},
         {'name': 'Tags', 'description': 'Flexible task tagging'},
-        {'name': 'Habits', 'description': 'Habit tracking and streaks'},
-        {'name': 'Pomodoro', 'description': 'Focus session management'},
         {'name': 'Analytics', 'description': 'Productivity insights and statistics'},
         {'name': 'MCP', 'description': 'Model Context Protocol endpoints for AI agents'},
     ],

@@ -30,44 +30,6 @@ class BulkUpdateStatusResponseSerializer(serializers.Serializer):
 
 
 # =============================================================================
-# Pomodoro Action Serializers
-# =============================================================================
-
-class PomodoroCompleteRequestSerializer(serializers.Serializer):
-    """Request body for completing a pomodoro session."""
-    interruptions_count = serializers.IntegerField(
-        required=False,
-        default=0,
-        help_text="Number of interruptions during the session"
-    )
-    notes = serializers.CharField(
-        required=False,
-        allow_blank=True,
-        help_text="Optional notes about the session"
-    )
-
-
-# =============================================================================
-# Habit Action Serializers
-# =============================================================================
-
-class HabitCompleteRequestSerializer(serializers.Serializer):
-    """Request body for logging a habit completion."""
-    notes = serializers.CharField(
-        required=False,
-        allow_blank=True,
-        help_text="Optional notes about this completion"
-    )
-
-
-class HabitCompleteResponseSerializer(serializers.Serializer):
-    """Response for habit completion endpoint."""
-    log = serializers.DictField(help_text="The created log entry")
-    habit = serializers.DictField(help_text="Updated habit data with new streak")
-    message = serializers.CharField(help_text="Success message with streak info")
-
-
-# =============================================================================
 # MCP Action Serializers
 # =============================================================================
 

@@ -1,335 +1,304 @@
 # Smart Productivity Analytics Platform API
 
-A comprehensive RESTful API for intelligent task management, habit tracking, and productivity analytics. Built with Django REST Framework targeting high academic standards.
+A comprehensive RESTful API for intelligent task management and productivity analytics. Features Model Context Protocol (MCP) integration for AI agent interoperability.
 
-## 🌟 Features
+## Project Overview
 
-### Core Functionality
-- **Task Management**: Full CRUD operations with categories, tags, priorities, and energy levels
-- **Habit Tracking**: Daily/weekly/monthly habits with automatic streak calculation
-- **Pomodoro Timer**: Focus session management with interruption tracking
-- **Productivity Analytics**: Daily snapshots, trends, and actionable insights
+| Item | Description |
+|------|-----------|
+| **Name** | Smart Productivity Analytics Platform |
+| **Purpose** | Provide a comprehensive productivity management API with AI integration capabilities |
+| **Core Features** | Task CRUD, Categories, Tags, Analytics Dashboard, MCP Integration |
+| **API Version** | v1 |
+| **Auth Method** | JWT (JSON Web Token) |
 
-### Advanced Features
-- **MCP Integration**: Model Context Protocol compatible endpoints for AI agent integration
-- **Smart Suggestions**: AI-powered task recommendations based on priority, energy, and deadlines
-- **Weather Correlation**: Optional weather data integration for productivity analysis
-- **Hierarchical Categories**: Support for nested task categories
+## Features
 
-## 🏗️ Architecture
+### Task Management
+- Full CRUD operations with filtering, searching, and sorting
+- Categories (hierarchical) and Tags (many-to-many)
+- Priority levels (1-5) and energy levels (low/medium/high)
+- Subtask support via parent-child relationships
+- Bulk status updates and custom actions (complete, reopen)
+
+### Analytics
+- Dashboard with today/weekly summaries
+- Task completion rates and trends
+- Productivity insights and recommendations
+
+### MCP Integration
+- Model Context Protocol compatible endpoints
+- Tool discovery with JSON Schema definitions
+- Programmable execution for AI agents
+- Smart task suggestions based on energy level
+
+## Technology Stack
+
+| Component | Technology | Version |
+|-----------|------------|---------|
+| Framework | Django | 5.2 |
+| API Layer | Django REST Framework | 3.15 |
+| Authentication | Simple JWT | 5.3 |
+| Documentation | drf-spectacular | 0.28 |
+| Database | SQLite (dev) / PostgreSQL (prod) | - |
+| Testing | pytest-django | 4.5 |
+| Filtering | django-filter | 24.3 |
+
+## Code Structure
 
 ```
 todo_api/
-├── api/                    # API endpoints
-│   ├── views/             # ViewSets and APIViews
-│   ├── serializers/       # Data serialization
-│   ├── urls.py            # URL routing
-│   └── exceptions.py      # Custom exception handling
-├── core/                   # Core application
-│   ├── models.py          # Data models
-│   └── admin.py           # Admin configuration
-├── tests/                  # Test suite
-│   ├── test_auth.py       # Authentication tests
-│   ├── test_tasks.py      # Task CRUD tests
-│   └── test_mcp.py        # MCP integration tests
-└── todo_api/              # Project configuration
-    ├── settings.py        # Django settings
-    └── urls.py            # Root URL configuration
+├── api/                      # API application
+│   ├── views/               # ViewSets and APIViews
+│   │   ├── auth.py         # Authentication endpoints
+│   │   ├── tasks.py        # Task/Category/Tag endpoints
+│   │   ├── analytics.py    # Analytics endpoints
+│   │   └── mcp.py          # MCP integration endpoints
+│   ├── serializers/         # Request/Response serialization
+│   │   ├── auth.py
+│   │   ├── tasks.py
+│   │   └── analytics.py
+│   └── urls.py              # URL routing with versioning
+├── core/                     # Core business logic
+│   ├── models.py            # Data models (User, Task, Category, Tag)
+│   └── admin.py             # Django admin configuration
+├── tests/                    # Test suite
+│   ├── conftest.py          # Shared fixtures
+│   ├── test_auth.py         # Authentication tests
+│   ├── test_tasks.py        # Task CRUD tests
+│   └── test_mcp.py          # MCP integration tests
+├── requirements.txt          # Python dependencies
+└── todo_api/                 # Project configuration
+    ├── settings.py          # Django settings
+    └── urls.py              # Root URL configuration
 ```
 
-## 🚀 Quick Start
+## Installation
 
-### Prerequisites
-- Python 3.10+
-- pip
+```bash
+# 1. Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-### Installation
+# 2. Install dependencies
+pip install -r requirements.txt
 
-1. **Clone and navigate to the project**:
-   ```bash
-   cd todo_api
-   ```
+# 3. Create logs directory
+mkdir -p logs
 
-2. **Create virtual environment**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+# 4. Apply database migrations
+python manage.py migrate
 
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+# 5. Create superuser (optional, for admin access)
+python manage.py createsuperuser
 
-4. **Create logs directory**:
-   ```bash
-   mkdir -p logs
-   ```
+# 6. Start development server
+python manage.py runserver
+```
 
-5. **Run migrations**:
-   ```bash
-   python manage.py migrate
-   ```
+Server runs at `http://localhost:8000/`
 
-6. **Create superuser** (optional):
-   ```bash
-   python manage.py createsuperuser
-   ```
+## Environment Variables
 
-7. **Run development server**:
-   ```bash
-   python manage.py runserver
-   ```
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DJANGO_SECRET_KEY` | Django secret key for cryptographic signing | (insecure dev default) |
+| `DJANGO_DEBUG` | Enable debug mode | `True` |
+| `DJANGO_ALLOWED_HOSTS` | Comma-separated allowed hosts | `localhost,127.0.0.1` |
+| `DATABASE_URL` | Database connection string | SQLite |
 
-The API will be available at `http://localhost:8000/`
+## API Documentation
 
-## 📚 API Documentation
+| Type | URL | Description |
+|------|-----|-------------|
+| Swagger UI | http://localhost:8000/api/v1/docs/swagger/ | Interactive API explorer |
+| ReDoc | http://localhost:8000/api/v1/docs/redoc/ | Clean API reference |
+| OpenAPI Schema | http://localhost:8000/api/v1/docs/schema/ | Raw JSON/YAML schema |
+| Admin Panel | http://localhost:8000/admin/ | Data management interface |
 
-### Interactive Documentation
-- **Swagger UI**: `http://localhost:8000/api/v1/docs/swagger/`
-- **ReDoc**: `http://localhost:8000/api/v1/docs/redoc/`
-- **OpenAPI Schema**: `http://localhost:8000/api/v1/docs/schema/`
+## API Endpoints Overview
 
-### Admin Interface
+| Category | Endpoints | Description |
+|----------|-----------|-------------|
+| Auth | 6 | Register, login, token refresh, profile, password change |
+| Tasks | 11 | CRUD, complete, reopen, today, overdue, bulk update |
+| Categories | 7 | CRUD with statistics |
+| Tags | 6 | CRUD operations |
+| Analytics | 3 | Dashboard, task analytics, trends |
+| MCP | 3 | Capabilities, tools, execute |
 
-Django Admin provides a web-based interface for managing all data:
+## curl Examples
 
-- **URL**: `http://localhost:8000/admin/`
-- **Login**: Use the superuser credentials created during setup
-
-**Available Admin Features:**
-- User management with productivity settings
-- Task, Category, and Tag management
-- Habit tracking and completion logs
-- Pomodoro session monitoring
-- Productivity snapshot viewing
+Below are curl examples organized by functionality. Each section shows the most common operations.
 
 ### Authentication
 
-The API uses JWT (JSON Web Token) authentication.
-
-#### Register a new user
+**Register a new user:**
 ```bash
 curl -X POST http://localhost:8000/api/v1/auth/register/ \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
     "username": "johndoe",
-    "password": "SecurePassword123!",
-    "password_confirm": "SecurePassword123!"
+    "password": "SecurePass123!",
+    "password_confirm": "SecurePass123!"
   }'
 ```
 
-#### Obtain tokens
+**Login (obtain JWT tokens):**
 ```bash
 curl -X POST http://localhost:8000/api/v1/auth/token/ \
   -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "SecurePass123!"}'
+```
+
+**Refresh access token:**
+```bash
+curl -X POST http://localhost:8000/api/v1/auth/token/refresh/ \
+  -H "Content-Type: application/json" \
+  -d '{"refresh": "<refresh_token>"}'
+```
+
+### Tasks
+
+**Create a task:**
+```bash
+curl -X POST http://localhost:8000/api/v1/tasks/ \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
   -d '{
-    "email": "user@example.com",
-    "password": "SecurePassword123!"
+    "title": "Complete project report",
+    "description": "Write the final section",
+    "priority": 4,
+    "energy_level": "high",
+    "due_date": "2026-03-15T17:00:00Z"
   }'
 ```
 
-#### Use the token
+**List tasks with filtering:**
 ```bash
-curl -X GET http://localhost:8000/api/v1/tasks/ \
-  -H "Authorization: Bearer <your_access_token>"
+# Filter by status and priority
+curl "http://localhost:8000/api/v1/tasks/?status=pending&priority=4" \
+  -H "Authorization: Bearer <access_token>"
+
+# Get today's tasks
+curl http://localhost:8000/api/v1/tasks/today/ \
+  -H "Authorization: Bearer <access_token>"
+
+# Get overdue tasks
+curl http://localhost:8000/api/v1/tasks/overdue/ \
+  -H "Authorization: Bearer <access_token>"
 ```
 
-### Main Endpoints
+**Complete a task:**
+```bash
+curl -X POST http://localhost:8000/api/v1/tasks/<task_id>/complete/ \
+  -H "Authorization: Bearer <access_token>"
+```
 
-| Endpoint | Methods | Description |
-|----------|---------|-------------|
-| `/api/v1/auth/register/` | POST | User registration |
-| `/api/v1/auth/token/` | POST | Obtain JWT tokens |
-| `/api/v1/auth/token/refresh/` | POST | Refresh access token |
-| `/api/v1/auth/profile/` | GET, PUT, PATCH | User profile management |
-| `/api/v1/tasks/` | GET, POST | Task list and create |
-| `/api/v1/tasks/{id}/` | GET, PUT, PATCH, DELETE | Task detail operations |
-| `/api/v1/tasks/{id}/complete/` | POST | Mark task completed |
-| `/api/v1/tasks/today/` | GET | Get today's tasks |
-| `/api/v1/tasks/overdue/` | GET | Get overdue tasks |
-| `/api/v1/categories/` | GET, POST | Category management |
-| `/api/v1/tags/` | GET, POST | Tag management |
-| `/api/v1/habits/` | GET, POST | Habit management |
-| `/api/v1/habits/{id}/complete/` | POST | Log habit completion |
-| `/api/v1/pomodoro/` | GET, POST | Pomodoro sessions |
-| `/api/v1/pomodoro/{id}/complete/` | POST | Complete pomodoro session |
-| `/api/v1/analytics/dashboard/` | GET | Dashboard statistics |
-| `/api/v1/analytics/trends/` | GET | Productivity trends |
-| `/api/v1/mcp/capabilities/` | GET | MCP capabilities (public) |
-| `/api/v1/mcp/tools/` | GET | Available MCP tools |
-| `/api/v1/mcp/execute/` | POST | Execute MCP tool |
+### Analytics
 
-## 🤖 MCP Integration
+**Get dashboard overview:**
+```bash
+curl http://localhost:8000/api/v1/analytics/dashboard/ \
+  -H "Authorization: Bearer <access_token>"
+```
 
-This API implements the Model Context Protocol (MCP) for seamless AI agent integration.
+**Get task analytics (last 30 days):**
+```bash
+curl "http://localhost:8000/api/v1/analytics/tasks/?days=30" \
+  -H "Authorization: Bearer <access_token>"
+```
 
-### Discover Capabilities
+### MCP (Model Context Protocol)
+
+**Discover API capabilities (public):**
 ```bash
 curl http://localhost:8000/api/v1/mcp/capabilities/
 ```
 
-### List Available Tools
+**List available tools:**
 ```bash
 curl http://localhost:8000/api/v1/mcp/tools/ \
-  -H "Authorization: Bearer <token>"
+  -H "Authorization: Bearer <access_token>"
 ```
 
-### Execute a Tool
+**Execute a tool - Smart task suggestion:**
 ```bash
 curl -X POST http://localhost:8000/api/v1/mcp/execute/ \
-  -H "Authorization: Bearer <token>" \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tool": "suggest_next_task",
+    "arguments": {"energy_level": "low"}
+  }'
+```
+
+**Execute a tool - Create task via MCP:**
+```bash
+curl -X POST http://localhost:8000/api/v1/mcp/execute/ \
+  -H "Authorization: Bearer <access_token>" \
   -H "Content-Type: application/json" \
   -d '{
     "tool": "create_task",
     "arguments": {
-      "title": "Complete report",
-      "priority": "high",
-      "due_date": "2024-12-31T17:00:00Z"
+      "title": "Review pull requests",
+      "priority": "high"
     }
   }'
 ```
 
-### Available MCP Tools
+## Testing
 
-| Tool | Description |
-|------|-------------|
-| `create_task` | Create a new task |
-| `list_tasks` | List tasks with filtering |
-| `complete_task` | Mark a task as completed |
-| `get_today_tasks` | Get tasks due today |
-| `get_overdue_tasks` | Get overdue tasks |
-| `start_pomodoro` | Start a focus session |
-| `complete_habit` | Log habit completion |
-| `get_productivity_summary` | Get productivity metrics |
-| `suggest_next_task` | Get AI-powered task suggestion |
-| `create_category` | Create a new category |
-
-## 🧪 Testing
-
-### Run all tests
 ```bash
+# Run all tests
 pytest
-```
 
-### Run with coverage
-```bash
+# Run with verbose output
+pytest -v
+
+# Run with coverage report
 pytest --cov=api --cov=core --cov-report=html
+
+# Run specific test modules
+pytest tests/test_auth.py -v      # Authentication tests
+pytest tests/test_tasks.py -v     # Task CRUD tests
+pytest tests/test_mcp.py -v       # MCP integration tests
+
+# Run tests matching a pattern
+pytest -k "test_create" -v
 ```
 
-### Run specific test file
+## Deployment
+
 ```bash
-pytest tests/test_tasks.py -v
+# Set production environment variables
+export DJANGO_DEBUG=False
+export DJANGO_SECRET_KEY="your-production-secret-key"
+export DJANGO_ALLOWED_HOSTS="your-domain.com,www.your-domain.com"
+
+# Collect static files
+python manage.py collectstatic --noinput
+
+# Apply migrations
+python manage.py migrate
+
+# Run with gunicorn (production WSGI server)
+gunicorn todo_api.wsgi:application \
+  --bind 0.0.0.0:8000 \
+  --workers 4 \
+  --access-logfile logs/access.log \
+  --error-logfile logs/error.log
 ```
 
-### Run MCP tests only
-```bash
-pytest tests/test_mcp.py -v
-```
+## Security Features
 
-## 📊 Data Models
-
-### User
-Extended Django user with productivity preferences:
-- Timezone configuration
-- Work hour preferences
-- Daily task goals
-
-### Task
-Core task entity with rich metadata:
-- Title, description, status, priority
-- Category and tags (many-to-many)
-- Due date, estimated/actual time
-- Energy level requirements
-- Parent task support (subtasks)
-
-### Category
-Hierarchical task categorization:
-- Name, color, icon
-- Parent category (2-level nesting)
-- Active/inactive status
-
-### Habit
-Recurring habit tracking:
-- Frequency (daily/weekly/monthly)
-- Target count per period
-- Automatic streak calculation
-
-### PomodoroSession
-Focus session tracking:
-- Session type (focus/short break/long break)
-- Planned and actual duration
-- Interruption counting
-- Task association
-
-### ProductivitySnapshot
-Daily productivity summary:
-- Tasks created/completed/overdue
-- Focus time and sessions
-- Productivity score
-- Optional weather data
-
-## ⚙️ Configuration
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DJANGO_SECRET_KEY` | Django secret key | (insecure default) |
-| `DJANGO_DEBUG` | Debug mode | `True` |
-| `DJANGO_ALLOWED_HOSTS` | Allowed hosts | `localhost,127.0.0.1` |
-| `CORS_ALLOWED_ORIGINS` | CORS origins | `http://localhost:3000` |
-| `WEATHER_API_ENABLED` | Enable weather API | `False` |
-| `WEATHER_API_KEY` | OpenWeatherMap API key | - |
-
-### Rate Limiting
-
-- Anonymous users: 100 requests/hour
-- Authenticated users: 1000 requests/hour
-
-## 🔒 Security Features
-
-- JWT authentication with token rotation
-- Token blacklisting on logout
+- JWT authentication with 60-minute access token expiry
+- Refresh token rotation and blacklisting
 - Password strength validation
-- CORS configuration
-- Rate limiting
-- Input validation on all endpoints
+- Rate limiting (100/hour anonymous, 1000/hour authenticated)
+- User data isolation (queryset filtering)
 
-## 📈 Scoring Criteria Alignment
+## License
 
-This project is designed to meet academic assessment criteria:
-
-### 70+ Requirements ✅
-- Clean, modular, maintainable code
-- MCP-compatible API design
-- Comprehensive API documentation (Swagger/ReDoc)
-- Thorough testing with pytest
-- Professional project structure
-
-### 80+ Requirements ✅
-- Exemplary software architecture
-- Advanced authentication (JWT with refresh tokens)
-- Comprehensive test suite with fixtures
-- Creative data model design
-- Analytics and insights features
-
-### 90+ Requirements ✅
-- Novel AI integration (MCP protocol)
-- Smart task suggestions
-- Publication-quality documentation
-- Productivity analytics with trends
-- Weather correlation capability
-
-## 📄 License
-
-MIT License - see LICENSE file for details.
-
-## 👤 Author
-
-COMP3011 Coursework Submission
-
----
-
-*Built with Django REST Framework, targeting excellence in web services development.*
+MIT License

@@ -5,6 +5,11 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenBlacklistView,
+)
 from drf_spectacular.utils import extend_schema, extend_schema_view
 
 from api.serializers.auth import (
@@ -13,6 +18,43 @@ from api.serializers.auth import (
     UserProfileUpdateSerializer,
     ChangePasswordSerializer,
 )
+
+
+# JWT Token Views with proper API tags
+@extend_schema_view(
+    post=extend_schema(
+        summary="Obtain JWT token pair",
+        description="Get access and refresh tokens by providing valid credentials.",
+        tags=['Authentication'],
+    )
+)
+class CustomTokenObtainPairView(TokenObtainPairView):
+    """Custom view to properly tag JWT token obtain endpoint."""
+    pass
+
+
+@extend_schema_view(
+    post=extend_schema(
+        summary="Refresh JWT token",
+        description="Get a new access token using a valid refresh token.",
+        tags=['Authentication'],
+    )
+)
+class CustomTokenRefreshView(TokenRefreshView):
+    """Custom view to properly tag JWT token refresh endpoint."""
+    pass
+
+
+@extend_schema_view(
+    post=extend_schema(
+        summary="Blacklist JWT token",
+        description="Blacklist a refresh token to invalidate it (logout).",
+        tags=['Authentication'],
+    )
+)
+class CustomTokenBlacklistView(TokenBlacklistView):
+    """Custom view to properly tag JWT token blacklist endpoint."""
+    pass
 
 
 @extend_schema_view(

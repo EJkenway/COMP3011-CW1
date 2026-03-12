@@ -131,8 +131,6 @@ class TaskDetailSerializer(serializers.ModelSerializer):
     category = CategorySimpleSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
     is_overdue = serializers.BooleanField(read_only=True)
-    total_pomodoro_minutes = serializers.SerializerMethodField()
-    pomodoro_sessions_count = serializers.SerializerMethodField()
     
     class Meta:
         model = Task
@@ -141,25 +139,13 @@ class TaskDetailSerializer(serializers.ModelSerializer):
             'energy_level', 'category', 'tags', 'parent_task',
             'due_date', 'reminder_date', 'scheduled_date',
             'estimated_minutes', 'actual_minutes', 'is_overdue',
-            'total_pomodoro_minutes', 'pomodoro_sessions_count',
             'location', 'external_url', 'notes',
             'created_at', 'updated_at', 'completed_at'
         ]
         read_only_fields = [
             'id', 'created_at', 'updated_at', 'completed_at',
-            'is_overdue', 'total_pomodoro_minutes', 'pomodoro_sessions_count'
+            'is_overdue'
         ]
-    
-    @extend_schema_field(int)
-    def get_total_pomodoro_minutes(self, obj) -> int:
-        """Get total focus time from pomodoro sessions."""
-        sessions = obj.pomodoro_sessions.filter(status='completed')
-        return sum(s.actual_duration or 0 for s in sessions)
-    
-    @extend_schema_field(int)
-    def get_pomodoro_sessions_count(self, obj) -> int:
-        """Get number of completed pomodoro sessions."""
-        return obj.pomodoro_sessions.filter(status='completed').count()
 
 
 class TaskCreateUpdateSerializer(serializers.ModelSerializer):

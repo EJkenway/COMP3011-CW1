@@ -5,11 +5,6 @@ Provides versioned API endpoints (api/v1/).
 """
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-    TokenBlacklistView,
-)
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
@@ -21,18 +16,16 @@ from .views import (
     RegisterView,
     ProfileView,
     ChangePasswordView,
+    CustomTokenObtainPairView,
+    CustomTokenRefreshView,
+    CustomTokenBlacklistView,
     # Tasks
     CategoryViewSet,
     TagViewSet,
     TaskViewSet,
-    # Productivity
-    PomodoroSessionViewSet,
-    HabitViewSet,
     # Analytics
     AnalyticsDashboardView,
     TaskAnalyticsView,
-    HabitAnalyticsView,
-    PomodoroAnalyticsView,
     ProductivityTrendView,
     # MCP
     MCPCapabilitiesView,
@@ -45,15 +38,13 @@ router = DefaultRouter()
 router.register(r'categories', CategoryViewSet, basename='category')
 router.register(r'tags', TagViewSet, basename='tag')
 router.register(r'tasks', TaskViewSet, basename='task')
-router.register(r'pomodoro', PomodoroSessionViewSet, basename='pomodoro')
-router.register(r'habits', HabitViewSet, basename='habit')
 
 # Authentication URLs
 auth_patterns = [
     # JWT Token endpoints
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('token/blacklist/', TokenBlacklistView.as_view(), name='token_blacklist'),
+    path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
+    path('token/blacklist/', CustomTokenBlacklistView.as_view(), name='token_blacklist'),
     
     # User management
     path('register/', RegisterView.as_view(), name='register'),
@@ -65,8 +56,6 @@ auth_patterns = [
 analytics_patterns = [
     path('dashboard/', AnalyticsDashboardView.as_view(), name='analytics_dashboard'),
     path('tasks/', TaskAnalyticsView.as_view(), name='analytics_tasks'),
-    path('habits/', HabitAnalyticsView.as_view(), name='analytics_habits'),
-    path('pomodoro/', PomodoroAnalyticsView.as_view(), name='analytics_pomodoro'),
     path('trends/', ProductivityTrendView.as_view(), name='analytics_trends'),
 ]
 

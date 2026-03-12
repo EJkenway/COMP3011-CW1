@@ -1,13 +1,11 @@
 """
 Core Data Models for Smart Productivity API
 
-This module defines all database models for the todo/productivity tracking system.
+This module defines all database models for the task management system.
 Features include:
 - Custom User model with productivity preferences
 - Task management with priority, categories, and time tracking
-- Habit tracking with streaks
-- Pomodoro sessions
-- Productivity analytics snapshots
+- Category and tag organization
 
 Author: Student
 Course: COMP3011 Web Services and Web Data
@@ -15,7 +13,6 @@ Course: COMP3011 Web Services and Web Data
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 import uuid
 
@@ -203,9 +200,9 @@ class Task(models.Model):
     started_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
 
-    # Recurrence (for habits)
+    # Recurrence
     is_recurring = models.BooleanField(default=False)
-    recurrence_pattern = models.CharField(max_length=50, blank=True)  # e.g., 'daily', 'weekly:mon,wed,fri'
+    recurrence_pattern = models.CharField(max_length=50, blank=True)
 
     class Meta:
         db_table = 'tasks'
@@ -241,254 +238,3 @@ class Task(models.Model):
             delta = self.completed_at - self.started_at
             return int(delta.total_seconds() / 60)
         return None
-
-
-class PomodoroSession(models.Model):
-    """
-    Pomodoro technique session tracking.
-    Tracks focus sessions with interruptions and notes.
-    """
-    
-    class SessionType(models.TextChoices):
-        FOCUS = 'focus', 'Focus Session'
-        SHORT_BREAK = 'short_break', 'Short Break'
-        LONG_BREAK = 'long_break', 'Long Break'
-
-    class SessionStatus(models.TextChoices):
-        ACTIVE = 'active', 'Active'
-        PAUSED = 'paused', 'Paused'
-        COMPLETED = 'completed', 'Completed'
-        CANCELLED = 'cancelled', 'Cancelled'
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pomodoro_sessions')
-    task = models.ForeignKey(
-        Task, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True,
-        related_name='pomodoro_sessions'
-    )
-    
-    session_type = models.CharField(
-        max_length=20, 
-        choices=SessionType.choices, 
-        default=SessionType.FOCUS
-    )
-    status = models.CharField(
-        max_length=20,
-        choices=SessionStatus.choices,
-        default=SessionStatus.ACTIVE
-    )
-    
-    # Duration settings (in minutes)
-    planned_duration = models.PositiveIntegerField(default=25)
-    actual_duration = models.PositiveIntegerField(null=True, blank=True)
-    
-    # Timestamps
-    start_time = models.DateTimeField(auto_now_add=True)
-    end_time = models.DateTimeField(null=True, blank=True)
-    pause_time = models.DateTimeField(null=True, blank=True)
-    
-    # Tracking
-    interruptions_count = models.PositiveIntegerField(default=0)
-    notes = models.TextField(blank=True)
-
-    class Meta:
-        db_table = 'pomodoro_sessions'
-        ordering = ['-start_time']
-
-    def __str__(self):
-        return f"{self.session_type} - {self.user.username} ({self.start_time})"
-
-    def complete(self):
-        """Mark session as completed and calculate actual duration."""
-        self.status = self.SessionStatus.COMPLETED
-        self.end_time = timezone.now()
-        delta = self.end_time - self.start_time
-        self.actual_duration = int(delta.total_seconds() / 60)
-        self.save()
-
-
-class Habit(models.Model):
-    """
-    Habit tracking with streak calculation.
-    Links to tasks for integrated habit-task workflow.
-    """
-    
-    class Frequency(models.TextChoices):
-        DAILY = 'daily', 'Daily'
-        WEEKLY = 'weekly', 'Weekly'
-        CUSTOM = 'custom', 'Custom'
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='habits')
-    
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-    frequency = models.CharField(
-        max_length=20, 
-        choices=Frequency.choices, 
-        default=Frequency.DAILY
-    )
-    
-    # For weekly/custom frequency
-    target_days = models.JSONField(
-        default=list,
-        help_text='Days of week for habit (0=Monday, 6=Sunday)'
-    )
-    target_count = models.PositiveIntegerField(
-        default=1,
-        help_text='Number of times to complete per period'
-    )
-    
-    # Display customization
-    color = models.CharField(max_length=7, default='#10B981')
-    icon = models.CharField(max_length=50, blank=True, default='')
-    
-    # Streak tracking
-    current_streak = models.PositiveIntegerField(default=0)
-    best_streak = models.PositiveIntegerField(default=0)
-    last_completed = models.DateField(null=True, blank=True)
-    
-    # Statistics
-    total_completions = models.PositiveIntegerField(default=0)
-    
-    # Settings
-    reminder_time = models.TimeField(null=True, blank=True)
-    is_active = models.BooleanField(default=True)
-    
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'habits'
-        ordering = ['-current_streak', 'name']
-
-    def __str__(self):
-        return f"{self.name} (Streak: {self.current_streak})"
-
-    def record_completion(self):
-        """Record a habit completion and update streaks."""
-        today = timezone.now().date()
-        
-        if self.last_completed == today:
-            return  # Already completed today
-        
-        # Check if streak continues
-        if self.last_completed:
-            days_diff = (today - self.last_completed).days
-            if days_diff == 1:
-                self.current_streak += 1
-            elif days_diff > 1:
-                self.current_streak = 1  # Reset streak
-        else:
-            self.current_streak = 1
-        
-        # Update best streak
-        if self.current_streak > self.best_streak:
-            self.best_streak = self.current_streak
-        
-        self.last_completed = today
-        self.total_completions += 1
-        self.save()
-
-
-class HabitLog(models.Model):
-    """
-    Individual habit completion logs.
-    """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    habit = models.ForeignKey(Habit, on_delete=models.CASCADE, related_name='logs')
-    completed_at = models.DateTimeField(auto_now_add=True)
-    notes = models.TextField(blank=True)
-
-    class Meta:
-        db_table = 'habit_logs'
-        ordering = ['-completed_at']
-
-
-class ProductivitySnapshot(models.Model):
-    """
-    Daily productivity metrics snapshot.
-    Used for analytics and trend analysis.
-    """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='productivity_snapshots')
-    date = models.DateField()
-    
-    # Task metrics
-    tasks_created = models.PositiveIntegerField(default=0)
-    tasks_completed = models.PositiveIntegerField(default=0)
-    tasks_overdue = models.PositiveIntegerField(default=0)
-    
-    # Time metrics
-    total_focus_minutes = models.PositiveIntegerField(default=0)
-    total_pomodoros_completed = models.PositiveIntegerField(default=0)
-    avg_task_duration_minutes = models.FloatField(null=True, blank=True)
-    
-    # Productivity patterns
-    peak_productivity_hour = models.PositiveIntegerField(
-        null=True, 
-        blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(23)]
-    )
-    energy_pattern = models.JSONField(
-        default=dict,
-        help_text='Hourly energy/productivity distribution'
-    )
-    
-    # External data (weather integration)
-    weather_condition = models.CharField(max_length=50, blank=True)
-    temperature_celsius = models.FloatField(null=True, blank=True)
-    
-    # Habits
-    habits_completed = models.PositiveIntegerField(default=0)
-    habits_total = models.PositiveIntegerField(default=0)
-    
-    # Scores
-    productivity_score = models.FloatField(
-        null=True, 
-        blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(100)]
-    )
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'productivity_snapshots'
-        unique_together = ['user', 'date']
-        ordering = ['-date']
-
-    def __str__(self):
-        return f"{self.user.username} - {self.date}"
-
-    def calculate_productivity_score(self):
-        """
-        Calculate daily productivity score (0-100).
-        Based on task completion, focus time, and habit adherence.
-        """
-        score = 0
-        weights = {
-            'task_completion': 40,
-            'focus_time': 30,
-            'habit_adherence': 30
-        }
-        
-        # Task completion score
-        if self.tasks_created > 0:
-            completion_rate = self.tasks_completed / self.tasks_created
-            score += completion_rate * weights['task_completion']
-        
-        # Focus time score (target: 4 hours = 240 minutes)
-        focus_score = min(self.total_focus_minutes / 240, 1)
-        score += focus_score * weights['focus_time']
-        
-        # Habit adherence
-        if self.habits_total > 0:
-            habit_rate = self.habits_completed / self.habits_total
-            score += habit_rate * weights['habit_adherence']
-        
-        self.productivity_score = round(score, 2)
-        return self.productivity_score
