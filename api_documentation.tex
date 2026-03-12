@@ -63,7 +63,7 @@
 \section{Introduction}
 % =============================================================================
 
-This document provides comprehensive documentation for the Smart Productivity Analytics Platform API. The API enables task management, habit tracking, Pomodoro timer functionality, and productivity analytics through a RESTful interface.
+This document provides comprehensive documentation for the Smart Productivity Analytics Platform API. The API enables task management and productivity analytics through a RESTful interface.
 
 \subsection{Base URL}
 
@@ -386,110 +386,7 @@ DELETE & /tags/\{id\}/ & Delete tag \\
 \caption{Tag Endpoints}
 \end{table}
 
-% -----------------------------------------------------------------------------
-\subsection{Habit Endpoints}
-% -----------------------------------------------------------------------------
 
-\begin{table}[H]
-\centering
-\small
-\begin{tabular}{@{}llp{6cm}@{}}
-\toprule
-\textbf{Method} & \textbf{Endpoint} & \textbf{Description} \\
-\midrule
-GET & /habits/ & List all habits \\
-POST & /habits/ & Create a habit \\
-GET & /habits/\{id\}/ & Get habit details \\
-PUT/PATCH & /habits/\{id\}/ & Update habit \\
-DELETE & /habits/\{id\}/ & Delete habit \\
-POST & /habits/\{id\}/complete/ & Log habit completion \\
-GET & /habits/\{id\}/history/ & Get completion history \\
-\bottomrule
-\end{tabular}
-\caption{Habit Endpoints}
-\end{table}
-
-\subsubsection{Habit Object}
-
-\begin{lstlisting}[style=json]
-{
-    "id": "550e8400-e29b-41d4-a716-446655440000",
-    "name": "Morning meditation",
-    "description": "10 minutes of mindfulness",
-    "frequency": "daily",
-    "target_count": 1,
-    "current_streak": 15,
-    "best_streak": 30,
-    "is_active": true,
-    "created_at": "2026-01-01T00:00:00Z"
-}
-\end{lstlisting}
-
-\subsubsection{Complete Habit}
-
-\textbf{POST} \texttt{/api/v1/habits/\{id\}/complete/}
-
-\textbf{Request Body:}
-\begin{lstlisting}[style=json]
-{
-    "notes": "Completed 15 minutes today"
-}
-\end{lstlisting}
-
-\textbf{Response (201 Created):}
-\begin{lstlisting}[style=json]
-{
-    "log": {
-        "id": "...",
-        "completed_at": "2026-03-12T08:00:00Z",
-        "notes": "Completed 15 minutes today"
-    },
-    "habit": {
-        "current_streak": 16,
-        "best_streak": 30
-    },
-    "message": "Habit completed! Current streak: 16"
-}
-\end{lstlisting}
-
-% -----------------------------------------------------------------------------
-\subsection{Pomodoro Endpoints}
-% -----------------------------------------------------------------------------
-
-\begin{table}[H]
-\centering
-\small
-\begin{tabular}{@{}llp{6cm}@{}}
-\toprule
-\textbf{Method} & \textbf{Endpoint} & \textbf{Description} \\
-\midrule
-GET & /pomodoro/ & List all sessions \\
-POST & /pomodoro/ & Start a new session \\
-GET & /pomodoro/\{id\}/ & Get session details \\
-DELETE & /pomodoro/\{id\}/ & Delete session \\
-POST & /pomodoro/\{id\}/complete/ & Complete session \\
-POST & /pomodoro/\{id\}/cancel/ & Cancel session \\
-GET & /pomodoro/active/ & Get active session \\
-GET & /pomodoro/today\_summary/ & Get today's summary \\
-\bottomrule
-\end{tabular}
-\caption{Pomodoro Endpoints}
-\end{table}
-
-\subsubsection{Start Pomodoro Session}
-
-\textbf{POST} \texttt{/api/v1/pomodoro/}
-
-\textbf{Request Body:}
-\begin{lstlisting}[style=json]
-{
-    "session_type": "focus",
-    "planned_duration": 25,
-    "task": "550e8400-e29b-41d4-a716-446655440000"
-}
-\end{lstlisting}
-
-Session types: \texttt{focus}, \texttt{short\_break}, \texttt{long\_break}
 
 % -----------------------------------------------------------------------------
 \subsection{Analytics Endpoints}
@@ -504,8 +401,6 @@ Session types: \texttt{focus}, \texttt{short\_break}, \texttt{long\_break}
 \midrule
 GET & /analytics/dashboard/ & Dashboard overview \\
 GET & /analytics/tasks/ & Task analytics \\
-GET & /analytics/habits/ & Habit analytics \\
-GET & /analytics/pomodoro/ & Pomodoro analytics \\
 GET & /analytics/trends/ & Productivity trends \\
 \bottomrule
 \end{tabular}
@@ -518,21 +413,20 @@ GET & /analytics/trends/ & Productivity trends \\
 {
     "today": {
         "tasks_created": 5,
-        "tasks_completed": 3,
-        "focus_minutes": 120,
-        "pomodoro_sessions": 5
+        "tasks_completed": 3
     },
     "week": {
         "tasks_created": 25,
         "tasks_completed": 18,
-        "completion_rate": 72.0,
-        "total_focus_minutes": 480
+        "completion_rate": 72.0
     },
-    "habits": {
-        "total_active": 5,
-        "completed_today": 3,
-        "best_streak": 15
-    }
+    "recent_tasks": [
+        {
+            "id": "...",
+            "title": "Write report",
+            "status": "completed"
+        }
+    ]
 }
 \end{lstlisting}
 
@@ -571,10 +465,9 @@ list\_tasks & List tasks with filtering \\
 complete\_task & Mark a task as completed \\
 get\_today\_tasks & Get tasks due today \\
 get\_overdue\_tasks & Get overdue tasks \\
-start\_pomodoro & Start a focus session \\
-complete\_habit & Log habit completion \\
 suggest\_next\_task & Get AI-powered task suggestion based on energy level \\
 get\_productivity\_summary & Get productivity metrics \\
+create\_category & Create a new category \\
 \bottomrule
 \end{tabular}
 \caption{MCP Tools}
@@ -665,21 +558,7 @@ high & Complex problem-solving, creative work \\
 \caption{Energy Level Values}
 \end{table}
 
-\subsection{Habit Frequency}
 
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}ll@{}}
-\toprule
-\textbf{Value} & \textbf{Description} \\
-\midrule
-daily & Complete every day \\
-weekly & Complete every week \\
-monthly & Complete every month \\
-\bottomrule
-\end{tabular}
-\caption{Habit Frequency Values}
-\end{table}
 
 % =============================================================================
 \section{Examples}
@@ -716,33 +595,16 @@ curl -X POST http://localhost:8000/api/v1/tasks/<id>/complete/ \
   -H "Authorization: Bearer <token>"
 \end{lstlisting}
 
-\subsubsection{3. Track Habits}
+\subsubsection{3. Check Analytics}
 
 \begin{lstlisting}[style=bash]
-# Create habit
-curl -X POST http://localhost:8000/api/v1/habits/ \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Exercise","frequency":"daily","target_count":1}'
-
-# Log completion
-curl -X POST http://localhost:8000/api/v1/habits/<id>/complete/ \
+# Get dashboard
+curl -X GET http://localhost:8000/api/v1/analytics/dashboard/ \
   -H "Authorization: Bearer <token>"
-\end{lstlisting}
 
-\subsubsection{4. Use Pomodoro Timer}
-
-\begin{lstlisting}[style=bash]
-# Start session
-curl -X POST http://localhost:8000/api/v1/pomodoro/ \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{"session_type":"focus","planned_duration":25}'
-
-# Complete session
-curl -X POST http://localhost:8000/api/v1/pomodoro/<id>/complete/ \
-  -H "Authorization: Bearer <token>" \
-  -d '{"interruptions_count":1}'
+# Get productivity trends
+curl -X GET http://localhost:8000/api/v1/analytics/trends/?period=week \
+  -H "Authorization: Bearer <token>"
 \end{lstlisting}
 
 % =============================================================================
