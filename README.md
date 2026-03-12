@@ -1,14 +1,14 @@
 # Smart Productivity Analytics Platform API
 
-A comprehensive RESTful API for intelligent task management, habit tracking, Pomodoro timer, and productivity analytics. Features Model Context Protocol (MCP) integration for AI agent interoperability.
+A comprehensive RESTful API for intelligent task management and productivity analytics. Features Model Context Protocol (MCP) integration for AI agent interoperability.
 
 ## Project Overview
 
 | Item | Description |
-|------|-------------|
+|------|-----------|
 | **Name** | Smart Productivity Analytics Platform |
 | **Purpose** | Provide a comprehensive productivity management API with AI integration capabilities |
-| **Core Features** | Task CRUD, Habit Tracking, Pomodoro Timer, Analytics Dashboard, MCP Integration |
+| **Core Features** | Task CRUD, Categories, Tags, Analytics Dashboard, MCP Integration |
 | **API Version** | v1 |
 | **Auth Method** | JWT (JSON Web Token) |
 
@@ -21,23 +21,10 @@ A comprehensive RESTful API for intelligent task management, habit tracking, Pom
 - Subtask support via parent-child relationships
 - Bulk status updates and custom actions (complete, reopen)
 
-### Habit Tracking
-- Daily, weekly, and monthly frequency options
-- Automatic streak calculation (current and best)
-- Completion logging with notes
-- History retrieval for analytics
-
-### Pomodoro Timer
-- Focus sessions with configurable duration
-- Short and long break management
-- Interruption counting
-- Task association for time tracking
-
 ### Analytics
 - Dashboard with today/weekly summaries
 - Task completion rates and trends
-- Habit performance analysis
-- Productivity insights by time of day
+- Productivity insights and recommendations
 
 ### MCP Integration
 - Model Context Protocol compatible endpoints
@@ -65,22 +52,20 @@ todo_api/
 │   ├── views/               # ViewSets and APIViews
 │   │   ├── auth.py         # Authentication endpoints
 │   │   ├── tasks.py        # Task/Category/Tag endpoints
-│   │   ├── productivity.py # Habit/Pomodoro endpoints
 │   │   ├── analytics.py    # Analytics endpoints
 │   │   └── mcp.py          # MCP integration endpoints
 │   ├── serializers/         # Request/Response serialization
 │   │   ├── auth.py
 │   │   ├── tasks.py
-│   │   └── productivity.py
+│   │   └── analytics.py
 │   └── urls.py              # URL routing with versioning
 ├── core/                     # Core business logic
-│   ├── models.py            # Data models (User, Task, Habit, etc.)
+│   ├── models.py            # Data models (User, Task, Category, Tag)
 │   └── admin.py             # Django admin configuration
-├── tests/                    # Test suite (57 tests)
+├── tests/                    # Test suite
 │   ├── conftest.py          # Shared fixtures
 │   ├── test_auth.py         # Authentication tests
 │   ├── test_tasks.py        # Task CRUD tests
-│   ├── test_productivity.py # Habit/Pomodoro tests
 │   └── test_mcp.py          # MCP integration tests
 ├── requirements.txt          # Python dependencies
 └── todo_api/                 # Project configuration
@@ -139,9 +124,7 @@ Server runs at `http://localhost:8000/`
 | Tasks | 11 | CRUD, complete, reopen, today, overdue, bulk update |
 | Categories | 7 | CRUD with statistics |
 | Tags | 6 | CRUD operations |
-| Habits | 8 | CRUD, complete, history |
-| Pomodoro | 8 | CRUD, complete, cancel, active, summary |
-| Analytics | 5 | Dashboard, task/habit/pomodoro analytics, trends |
+| Analytics | 3 | Dashboard, task analytics, trends |
 | MCP | 3 | Capabilities, tools, execute |
 
 ## curl Examples
@@ -213,51 +196,6 @@ curl -X POST http://localhost:8000/api/v1/tasks/<task_id>/complete/ \
   -H "Authorization: Bearer <access_token>"
 ```
 
-### Habits
-
-**Create a habit:**
-```bash
-curl -X POST http://localhost:8000/api/v1/habits/ \
-  -H "Authorization: Bearer <access_token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Morning meditation",
-    "description": "10 minutes of mindfulness",
-    "frequency": "daily",
-    "target_count": 1
-  }'
-```
-
-**Log habit completion:**
-```bash
-curl -X POST http://localhost:8000/api/v1/habits/<habit_id>/complete/ \
-  -H "Authorization: Bearer <access_token>" \
-  -H "Content-Type: application/json" \
-  -d '{"notes": "Completed 15 minutes today"}'
-```
-
-### Pomodoro
-
-**Start a focus session:**
-```bash
-curl -X POST http://localhost:8000/api/v1/pomodoro/ \
-  -H "Authorization: Bearer <access_token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "session_type": "focus",
-    "planned_duration": 25,
-    "task": "<task_id>"
-  }'
-```
-
-**Complete a session:**
-```bash
-curl -X POST http://localhost:8000/api/v1/pomodoro/<session_id>/complete/ \
-  -H "Authorization: Bearer <access_token>" \
-  -H "Content-Type: application/json" \
-  -d '{"interruptions_count": 2, "notes": "Stayed focused"}'
-```
-
 ### Analytics
 
 **Get dashboard overview:**
@@ -313,7 +251,7 @@ curl -X POST http://localhost:8000/api/v1/mcp/execute/ \
 ## Testing
 
 ```bash
-# Run all tests (57 tests)
+# Run all tests
 pytest
 
 # Run with verbose output
